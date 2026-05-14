@@ -1,0 +1,36 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "autoname": "format:BI-TRANSFORM-RULE-{#####}",
+ "creation": "2026-05-02 00:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "dataset_import",
+  "column_name",
+  "rule_type",
+  "enabled",
+  "rule_config_json"
+ ],
+ "fields": [
+  {"fieldname": "dataset_import", "fieldtype": "Link", "in_list_view": 1, "label": "Import dataset", "options": "BI Dataset Import", "reqd": 1},
+  {"fieldname": "column_name", "fieldtype": "Data", "in_list_view": 1, "label": "Colonne"},
+  {"fieldname": "rule_type", "fieldtype": "Select", "in_list_view": 1, "label": "Type de règle", "options": "Trim Text\nNormalize Category\nConvert Date\nConvert Number\nFill Missing\nDrop Column\nRename Column\nRemove Duplicates\nCustom Formula", "reqd": 1},
+  {"default": "1", "fieldname": "enabled", "fieldtype": "Check", "label": "Activée"},
+  {"fieldname": "rule_config_json", "fieldtype": "Code", "label": "Configuration", "options": "JSON"}
+ ],
+ "links": [],
+ "modified": "2026-05-02 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "BI Studio",
+ "name": "BI Transform Rule",
+ "owner": "Administrator",
+ "permissions": [
+  {"create": 1, "delete": 1, "read": 1, "role": "System Manager", "write": 1},
+  {"create": 1, "delete": 1, "read": 1, "role": "User du wizio", "write": 1}
+ ],
+ "sort_field": "creation",
+ "sort_order": "ASC",
+ "states": []
+}
+

@@ -1,0 +1,29 @@
+{
+ "actions": [],
+ "autoname": "hash",
+ "creation": "2026-05-01 00:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": ["user", "reference_doctype", "reference_name", "label", "favorited_at"],
+ "fields": [
+  {"fieldname": "user", "fieldtype": "Link", "in_list_view": 1, "label": "Utilisateur", "options": "User", "reqd": 1},
+  {"fieldname": "reference_doctype", "fieldtype": "Select", "in_list_view": 1, "label": "Type d'élément", "options": "BI Dataset\nBI Dashboard\nBI AI Analysis", "reqd": 1},
+  {"fieldname": "reference_name", "fieldtype": "Dynamic Link", "in_list_view": 1, "label": "Élément", "options": "reference_doctype", "reqd": 1},
+  {"fieldname": "label", "fieldtype": "Data", "label": "Nom de l'élément"},
+  {"fieldname": "favorited_at", "fieldtype": "Datetime", "label": "Date d'ajout"}
+ ],
+ "links": [],
+ "modified": "2026-05-01 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "BI Studio",
+ "name": "BI Favorite",
+ "owner": "Administrator",
+ "permissions": [
+  {"create": 1, "delete": 1, "read": 1, "role": "System Manager", "write": 1},
+  {"create": 1, "delete": 1, "read": 1, "role": "User du wizio", "write": 1}
+ ],
+ "sort_field": "favorited_at",
+ "sort_order": "DESC",
+ "states": []
+}
+

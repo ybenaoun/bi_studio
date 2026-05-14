@@ -1,0 +1,28 @@
+{
+ "actions": [],
+ "autoname": "format:BI-DIM-{#####}",
+ "creation": "2026-05-01 00:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": ["dataset", "table_name", "dimension_type", "source_column", "row_count"],
+ "fields": [
+  {"fieldname": "dataset", "fieldtype": "Link", "in_list_view": 1, "label": "Dataset", "options": "BI Dataset", "reqd": 1},
+  {"fieldname": "table_name", "fieldtype": "Data", "hidden": 1, "label": "Table interne", "reqd": 1},
+  {"fieldname": "dimension_type", "fieldtype": "Select", "label": "Type", "options": "Category\nDate"},
+  {"fieldname": "source_column", "fieldtype": "Data", "label": "Colonne source"},
+  {"fieldname": "row_count", "fieldtype": "Int", "label": "Nombre de lignes"}
+ ],
+ "links": [],
+ "modified": "2026-05-01 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "BI Studio",
+ "name": "BI Dimension Table",
+ "owner": "Administrator",
+ "permissions": [
+  {"create": 1, "delete": 1, "read": 1, "role": "System Manager", "write": 1}
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}
+

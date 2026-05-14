@@ -1,0 +1,40 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "autoname": "format:BI-ETL-LOG-{#####}",
+ "creation": "2026-05-02 00:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "dataset_import",
+  "job_type",
+  "status",
+  "started_on",
+  "finished_on",
+  "log_message",
+  "error_traceback"
+ ],
+ "fields": [
+  {"fieldname": "dataset_import", "fieldtype": "Link", "in_list_view": 1, "label": "Import dataset", "options": "BI Dataset Import"},
+  {"fieldname": "job_type", "fieldtype": "Select", "in_list_view": 1, "label": "Type de job", "options": "Profiling\nTransform\nDashboard Generation\nAI Interpretation\nExtract\nClean\nProfile\nRename Columns\nCohere Prompt\nValidate AI JSON\nBuild Dashboard\nCompute Widget", "reqd": 1},
+  {"fieldname": "status", "fieldtype": "Select", "in_list_view": 1, "label": "Statut", "options": "Started\nSuccess\nFailed", "reqd": 1},
+  {"fieldname": "started_on", "fieldtype": "Datetime", "label": "Début"},
+  {"fieldname": "finished_on", "fieldtype": "Datetime", "label": "Fin"},
+  {"fieldname": "log_message", "fieldtype": "Long Text", "label": "Message"},
+  {"fieldname": "error_traceback", "fieldtype": "Long Text", "label": "Traceback"}
+ ],
+ "links": [],
+ "modified": "2026-05-02 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "BI Studio",
+ "name": "BI ETL Job Log",
+ "owner": "Administrator",
+ "permissions": [
+  {"create": 1, "delete": 1, "read": 1, "role": "System Manager", "write": 1},
+  {"read": 1, "role": "User du wizio"}
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}
+

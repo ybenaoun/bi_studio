@@ -1,0 +1,21 @@
+{
+ "app": "bi_studio",
+ "creation": "2026-05-01 00:00:00",
+ "docstatus": 0,
+ "doctype": "Desktop Icon",
+ "hidden": 0,
+ "icon": "bar-chart-3",
+ "icon_type": "Link",
+ "idx": 120,
+ "label": "BI Studio",
+ "link_to": "BI Studio",
+ "link_type": "Workspace Sidebar",
+ "modified": "2026-05-06 15:54:57.127169",
+ "modified_by": "Administrator",
+ "name": "BI Studio",
+ "owner": "Administrator",
+ "restrict_removal": 1,
+ "roles": [],
+ "sidebar": "BI Studio",
+ "standard": 1
+}

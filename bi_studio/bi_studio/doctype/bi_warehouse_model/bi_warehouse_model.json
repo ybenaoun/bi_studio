@@ -1,0 +1,30 @@
+{
+ "actions": [],
+ "autoname": "format:BI-MODEL-{#####}",
+ "creation": "2026-05-01 00:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": ["dataset", "raw_table", "clean_table", "fact_table", "model_json", "relationships_json", "generated_at"],
+ "fields": [
+  {"fieldname": "dataset", "fieldtype": "Link", "in_list_view": 1, "label": "Dataset", "options": "BI Dataset", "reqd": 1},
+  {"fieldname": "raw_table", "fieldtype": "Data", "hidden": 1, "label": "Raw Table"},
+  {"fieldname": "clean_table", "fieldtype": "Data", "hidden": 1, "label": "Clean Table"},
+  {"fieldname": "fact_table", "fieldtype": "Data", "hidden": 1, "label": "Fact Table"},
+  {"fieldname": "model_json", "fieldtype": "Code", "hidden": 1, "label": "Model JSON", "options": "JSON"},
+  {"fieldname": "relationships_json", "fieldtype": "Code", "hidden": 1, "label": "Relationships JSON", "options": "JSON"},
+  {"fieldname": "generated_at", "fieldtype": "Datetime", "label": "Date de génération", "read_only": 1}
+ ],
+ "links": [],
+ "modified": "2026-05-01 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "BI Studio",
+ "name": "BI Warehouse Model",
+ "owner": "Administrator",
+ "permissions": [
+  {"create": 1, "delete": 1, "read": 1, "role": "System Manager", "write": 1}
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}
+

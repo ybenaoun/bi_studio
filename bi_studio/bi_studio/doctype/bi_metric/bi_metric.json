@@ -1,0 +1,45 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "autoname": "format:BI-METRIC-{#####}",
+ "creation": "2026-05-02 00:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "dataset",
+  "metric_label",
+  "metric_key",
+  "metric_type",
+  "source_column",
+  "aggregation",
+  "value",
+  "format_type",
+  "config_json"
+ ],
+ "fields": [
+  {"fieldname": "dataset", "fieldtype": "Link", "in_list_view": 1, "label": "Dataset", "options": "BI Dataset", "reqd": 1},
+  {"fieldname": "metric_label", "fieldtype": "Data", "in_list_view": 1, "label": "Libellé", "reqd": 1},
+  {"fieldname": "metric_key", "fieldtype": "Data", "in_list_view": 1, "label": "Clé", "reqd": 1},
+  {"fieldname": "metric_type", "fieldtype": "Select", "label": "Type", "options": "Count\nCount Distinct\nSum\nAverage\nMin\nMax\nRatio\nQuality"},
+  {"fieldname": "source_column", "fieldtype": "Data", "label": "Colonne source"},
+  {"fieldname": "aggregation", "fieldtype": "Data", "label": "Agrégation"},
+  {"fieldname": "value", "fieldtype": "Data", "label": "Valeur"},
+  {"fieldname": "format_type", "fieldtype": "Select", "label": "Format", "options": "Number\nCurrency\nPercentage\nText", "default": "Number"},
+  {"fieldname": "config_json", "fieldtype": "Code", "label": "Configuration", "options": "JSON"}
+ ],
+ "links": [],
+ "modified": "2026-05-02 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "BI Studio",
+ "name": "BI Metric",
+ "owner": "Administrator",
+ "permissions": [
+  {"create": 1, "delete": 1, "read": 1, "role": "System Manager", "write": 1},
+  {"read": 1, "role": "User du wizio"}
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "metric_label"
+}
+

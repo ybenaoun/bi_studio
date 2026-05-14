@@ -1,0 +1,33 @@
+{
+ "actions": [],
+ "autoname": "format:BI-KPI-{#####}",
+ "creation": "2026-05-01 00:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": ["dataset", "label", "metric_key", "metric_type", "semantic_role", "source_column", "calculation_type", "format_type", "display_order", "value_json"],
+ "fields": [
+  {"fieldname": "dataset", "fieldtype": "Link", "in_list_view": 1, "label": "Dataset", "options": "BI Dataset", "reqd": 1},
+  {"fieldname": "label", "fieldtype": "Data", "in_list_view": 1, "label": "Libellé", "reqd": 1},
+  {"fieldname": "metric_key", "fieldtype": "Data", "label": "Clé métrique"},
+  {"fieldname": "metric_type", "fieldtype": "Select", "label": "Type métrique", "options": "Count\nCount Distinct\nSum\nAverage\nMin\nMax\nRatio\nQuality"},
+  {"fieldname": "semantic_role", "fieldtype": "Select", "label": "Rôle sémantique", "options": "Measure\nDimension\nDate Dimension\nIdentifier\nAttribute\nIgnored"},
+  {"fieldname": "source_column", "fieldtype": "Data", "label": "Valeur à analyser", "reqd": 1},
+  {"fieldname": "calculation_type", "fieldtype": "Select", "label": "Type de calcul", "options": "Total\nMoyenne\nMinimum\nMaximum\nNombre\nNombre unique", "reqd": 1},
+  {"fieldname": "format_type", "fieldtype": "Select", "label": "Format", "options": "Number\nCurrency\nPercent\nPercentage\nText", "default": "Number"},
+  {"fieldname": "display_order", "fieldtype": "Int", "label": "Ordre"},
+  {"fieldname": "value_json", "fieldtype": "Code", "hidden": 1, "label": "Valeur", "options": "JSON"}
+ ],
+ "links": [],
+ "modified": "2026-05-01 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "BI Studio",
+ "name": "BI KPI Definition",
+ "owner": "Administrator",
+ "permissions": [
+  {"create": 1, "delete": 1, "read": 1, "role": "System Manager", "write": 1},
+  {"read": 1, "role": "User du wizio"}
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}

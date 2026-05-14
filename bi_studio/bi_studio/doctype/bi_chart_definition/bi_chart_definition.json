@@ -1,0 +1,46 @@
+{
+ "actions": [],
+ "autoname": "format:BI-CHART-{#####}",
+ "creation": "2026-05-01 00:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "dataset",
+  "title",
+  "chart_type",
+  "category_field",
+  "value_field",
+  "secondary_value_field",
+  "calculation_type",
+  "top_n",
+  "display_order",
+  "config_json",
+  "data_preview_json"
+ ],
+ "fields": [
+  {"fieldname": "dataset", "fieldtype": "Link", "in_list_view": 1, "label": "Dataset", "options": "BI Dataset", "reqd": 1},
+  {"fieldname": "title", "fieldtype": "Data", "in_list_view": 1, "label": "Nom du graphique", "reqd": 1},
+  {"fieldname": "chart_type", "fieldtype": "Select", "in_list_view": 1, "label": "Type de graphique", "options": "Bar\nLine\nPie\nDonut\nHistogram\nGauge\nCombined\nScatter Plot\nTable\nKPI Card", "reqd": 1},
+  {"fieldname": "category_field", "fieldtype": "Data", "label": "Catégorie ou période"},
+  {"fieldname": "value_field", "fieldtype": "Data", "label": "Valeur à afficher"},
+  {"fieldname": "secondary_value_field", "fieldtype": "Data", "label": "Valeur secondaire"},
+  {"fieldname": "calculation_type", "fieldtype": "Select", "label": "Type de calcul", "options": "Total\nMoyenne\nMinimum\nMaximum\nNombre\nNombre unique", "default": "Total"},
+  {"fieldname": "top_n", "fieldtype": "Int", "label": "Top N", "default": "10"},
+  {"fieldname": "display_order", "fieldtype": "Int", "label": "Ordre"},
+  {"fieldname": "config_json", "fieldtype": "Code", "hidden": 1, "label": "Configuration", "options": "JSON"},
+  {"fieldname": "data_preview_json", "fieldtype": "Code", "hidden": 1, "label": "Aperçu", "options": "JSON"}
+ ],
+ "links": [],
+ "modified": "2026-05-01 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "BI Studio",
+ "name": "BI Chart Definition",
+ "owner": "Administrator",
+ "permissions": [
+  {"create": 1, "delete": 1, "read": 1, "role": "System Manager", "write": 1},
+  {"read": 1, "role": "User du wizio"}
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}

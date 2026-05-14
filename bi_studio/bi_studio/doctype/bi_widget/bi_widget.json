@@ -1,0 +1,53 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "autoname": "format:BI-WIDGET-{#####}",
+ "creation": "2026-05-02 00:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "dashboard",
+  "widget_id",
+  "widget_type",
+  "title",
+  "description",
+  "config_section",
+  "config_json",
+  "position_json",
+  "data_section",
+  "data_json",
+  "computed_on",
+  "compute_status",
+  "compute_error"
+ ],
+ "fields": [
+  {"fieldname": "dashboard", "fieldtype": "Link", "in_list_view": 1, "label": "Tableau de bord", "options": "BI Dashboard", "reqd": 1},
+  {"fieldname": "widget_id", "fieldtype": "Data", "in_list_view": 1, "label": "Identifiant widget", "reqd": 1},
+  {"fieldname": "widget_type", "fieldtype": "Select", "in_list_view": 1, "label": "Type", "options": "kpi_card\nbar_chart\nline_chart\npie_chart\ndata_table\nfilter\nkpi\nbar\nline\npie\ndonut\nhistogram\nscatter\ntable\ninsight\nquality", "reqd": 1},
+  {"fieldname": "title", "fieldtype": "Data", "in_list_view": 1, "label": "Titre"},
+  {"fieldname": "description", "fieldtype": "Small Text", "label": "Description"},
+  {"collapsible": 1, "fieldname": "config_section", "fieldtype": "Section Break", "label": "Configuration"},
+  {"fieldname": "config_json", "fieldtype": "Long Text", "label": "Configuration (JSON)"},
+  {"fieldname": "position_json", "fieldtype": "Code", "label": "Position layout (JSON)", "options": "JSON"},
+  {"collapsible": 1, "fieldname": "data_section", "fieldtype": "Section Break", "label": "Données calculées"},
+  {"fieldname": "data_json", "fieldtype": "Long Text", "label": "Données (JSON)"},
+  {"fieldname": "computed_on", "fieldtype": "Datetime", "label": "Calculé le", "read_only": 1},
+  {"default": "Pending", "fieldname": "compute_status", "fieldtype": "Select", "label": "Statut calcul", "options": "Pending\nSuccess\nFailed"},
+  {"fieldname": "compute_error", "fieldtype": "Small Text", "label": "Erreur de calcul"}
+ ],
+ "links": [],
+ "modified": "2026-05-02 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "BI Studio",
+ "name": "BI Widget",
+ "owner": "Administrator",
+ "permissions": [
+  {"create": 1, "delete": 1, "export": 1, "print": 1, "read": 1, "report": 1, "role": "System Manager", "share": 1, "write": 1},
+  {"create": 1, "delete": 1, "read": 1, "report": 1, "role": "User du wizio", "write": 1}
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "title",
+ "track_changes": 1
+}

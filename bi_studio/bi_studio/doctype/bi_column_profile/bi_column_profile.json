@@ -1,0 +1,56 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "autoname": "format:BI-COLUMN-PROFILE-{#####}",
+ "creation": "2026-05-02 00:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "dataset_import",
+  "original_column_name",
+  "normalized_column_name",
+  "detected_type",
+  "semantic_role",
+  "profile_section",
+  "null_count",
+  "null_rate",
+  "unique_count",
+  "sample_values",
+  "min_value",
+  "max_value",
+  "mean_value",
+  "confidence",
+  "warnings"
+ ],
+ "fields": [
+  {"fieldname": "dataset_import", "fieldtype": "Link", "in_list_view": 1, "label": "Import dataset", "options": "BI Dataset Import", "reqd": 1},
+  {"fieldname": "original_column_name", "fieldtype": "Data", "in_list_view": 1, "label": "Colonne originale", "reqd": 1},
+  {"fieldname": "normalized_column_name", "fieldtype": "Data", "in_list_view": 1, "label": "Colonne normalisée", "reqd": 1},
+  {"fieldname": "detected_type", "fieldtype": "Select", "in_list_view": 1, "label": "Type détecté", "options": "Text\nNumber\nCurrency\nDate\nBoolean\nCategory\nIdentifier\nUnknown"},
+  {"fieldname": "semantic_role", "fieldtype": "Select", "in_list_view": 1, "label": "Rôle sémantique", "options": "Measure\nDimension\nDate Dimension\nIdentifier\nAttribute\nIgnored"},
+  {"fieldname": "profile_section", "fieldtype": "Section Break", "label": "Profil"},
+  {"fieldname": "null_count", "fieldtype": "Int", "label": "Valeurs vides"},
+  {"fieldname": "null_rate", "fieldtype": "Float", "label": "Taux de nulls"},
+  {"fieldname": "unique_count", "fieldtype": "Int", "label": "Valeurs uniques"},
+  {"fieldname": "sample_values", "fieldtype": "Code", "label": "Exemples", "options": "JSON"},
+  {"fieldname": "min_value", "fieldtype": "Data", "label": "Min"},
+  {"fieldname": "max_value", "fieldtype": "Data", "label": "Max"},
+  {"fieldname": "mean_value", "fieldtype": "Float", "label": "Moyenne"},
+  {"fieldname": "confidence", "fieldtype": "Float", "label": "Confiance"},
+  {"fieldname": "warnings", "fieldtype": "Long Text", "label": "Warnings"}
+ ],
+ "links": [],
+ "modified": "2026-05-02 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "BI Studio",
+ "name": "BI Column Profile",
+ "owner": "Administrator",
+ "permissions": [
+  {"create": 1, "delete": 1, "read": 1, "role": "System Manager", "write": 1},
+  {"create": 1, "delete": 1, "read": 1, "role": "User du wizio", "write": 1}
+ ],
+ "sort_field": "creation",
+ "sort_order": "ASC",
+ "states": []
+}
+

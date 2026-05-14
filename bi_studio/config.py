@@ -13,22 +13,22 @@ COHERE_SITE_CONFIG_KEY = "cohere_api_key"
 DEFAULT_TOP_N = 10
 
 SUPPORTED_CALCULATIONS = {
-	"Total": "SUM",
-	"Moyenne": "AVG",
-	"Minimum": "MIN",
-	"Maximum": "MAX",
-	"Nombre": "COUNT",
-	"Nombre unique": "COUNT DISTINCT",
+    "Total": "SUM",
+    "Moyenne": "AVG",
+    "Minimum": "MIN",
+    "Maximum": "MAX",
+    "Nombre": "COUNT",
+    "Nombre unique": "COUNT DISTINCT",
 }
 
 SUPPORTED_CHART_TYPES = [
-	"Bar",
-	"Line",
-	"Pie",
-	"Donut",
-	"Histogram",
-	"Gauge",
-	"Combined",
-	"Table",
-	"KPI Card",
+    "Bar",
+    "Line",
+    "Pie",
+    "Donut",
+    "Histogram",
+    "Gauge",
+    "Combined",
+    "Table",
+    "KPI Card",
 ]
