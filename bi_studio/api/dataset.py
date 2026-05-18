@@ -1,108 +1,236 @@
+"""API REST pour les datasets BI Studio."""
+
+from __future__ import annotations
+
 import frappe
 from frappe import _
 
-from wizio_erp.services.permissions import (
-	assert_dataset_read,
-	assert_dataset_write,
-	can_read_dataset,
-	require_authenticated,
+from bi_studio.services.cleanup import delete_dataset_cascade
+from bi_studio.services.export import export_clean_dataset_file
+from bi_studio.services.permissions import (
+	ensure_authenticated,
+	ensure_dataset_access,
+	is_admin,
 )
-from wizio_erp.utils.data import apply_filters, dataframe_payload, read_tabular_file, resolve_file_path, to_json
+from bi_studio.services.query import get_clean_rows, get_dataset_columns
+from bi_studio.services.serialization import from_json
+
+
+def _is_favorite(reference_doctype: str, reference_name: str) -> bool:
+	return bool(
+		frappe.db.exists(
+			"BI Favorite",
+			{
+				"user": frappe.session.user,
+				"reference_doctype": reference_doctype,
+				"reference_name": reference_name,
+			},
+		)
+	)
+
+
+def _dataset_list_row(row: dict) -> dict:
+	row["is_favorite"] = _is_favorite("BI Dataset", row["name"])
+	return row
 
 
 @frappe.whitelist()
-def import_dataset(file_url: str, dataset_name: str | None = None):
-	require_authenticated()
-	path = resolve_file_path(file_url)
-	df = read_tabular_file(path)
-	payload = dataframe_payload(df)
-	doc = frappe.new_doc("Wizio Dataset")
-	doc.dataset_name = dataset_name or frappe.get_value("File", {"file_url": file_url}, "file_name") or "Dataset"
-	doc.status = "Ready"
-	doc.source_file = file_url
-	doc.imported_by = frappe.session.user
-	doc.row_count = len(payload["rows"])
-	doc.column_count = len(payload["schema"])
-	doc.data_json = to_json(payload["rows"])
-	doc.schema_json = to_json(payload["schema"])
-	doc.preview_json = to_json(payload["preview"])
-	doc.insert(ignore_permissions=True)
-	return {"dataset": doc.name, "dataset_name": doc.dataset_name, "row_count": doc.row_count}
-
-
-@frappe.whitelist()
-def create_dataset(dataset_name: str, rows_json: str = "[]", schema_json: str = "[]"):
-	require_authenticated()
-	rows = frappe.parse_json(rows_json) or []
-	schema = frappe.parse_json(schema_json) or []
-	if not isinstance(rows, list):
-		frappe.throw(_("Les lignes du dataset doivent etre une liste JSON."))
-	doc = frappe.new_doc("Wizio Dataset")
-	doc.dataset_name = dataset_name
-	doc.status = "Ready"
-	doc.imported_by = frappe.session.user
-	doc.row_count = len(rows)
-	doc.column_count = len(schema) if schema else (len(rows[0]) if rows else 0)
-	doc.data_json = to_json(rows)
-	doc.schema_json = to_json(schema)
-	doc.preview_json = to_json({"columns": schema, "rows": rows[:50]})
-	doc.insert(ignore_permissions=True)
-	return {"dataset": doc.name}
-
-
-@frappe.whitelist()
-def list_datasets(search: str | None = None, status: str | None = None, limit: int = 100):
-	require_authenticated()
-	filters = {}
+def get_datasets(search: str | None = None, status: str | None = None, limit: int = 100):
+	ensure_authenticated()
+	filters: dict = {}
 	if status:
 		filters["status"] = status
 	or_filters = {}
 	if search:
-		or_filters = {"dataset_name": ["like", f"%{search}%"], "name": ["like", f"%{search}%"]}
+		or_filters = {
+			"dataset_name": ["like", f"%{search}%"],
+			"description": ["like", f"%{search}%"],
+			"name": ["like", f"%{search}%"],
+		}
 	rows = frappe.get_list(
-		"Wizio Dataset",
+		"BI Dataset",
 		filters=filters,
 		or_filters=or_filters,
-		fields=["name", "dataset_name", "status", "imported_by", "row_count", "column_count", "modified"],
+		fields=[
+			"name",
+			"dataset_name",
+			"description",
+			"tags",
+			"status",
+			"row_count",
+			"column_count",
+			"quality_score",
+			"imported_at",
+			"last_transformed_on",
+			"suggested_dashboard",
+			"source_import",
+			"import_job",
+			"modified",
+			"owner",
+		],
 		order_by="modified desc",
 		limit_page_length=int(limit or 100),
 	)
-	return [row for row in rows if can_read_dataset(row.name)]
+	return [_dataset_list_row(row) for row in rows]
+
+
+# Alias rétrocompatibilité
+@frappe.whitelist()
+def list_datasets(search: str | None = None, status: str | None = None, limit: int = 100):
+	return get_datasets(search=search, status=status, limit=limit)
+
+
+def _auto_kpis(dataset_doc, columns: list) -> list:
+	"""Renvoie un KPI rapide par colonne mesure (au plus 4)."""
+	from bi_studio.services.query import get_kpi_value
+
+	kpis = [{"label": _("Nombre de lignes"), "value": int(dataset_doc.row_count or 0)}]
+	measures = [c for c in columns if c.get("semantic_role") == "Measure" or c.get("is_numeric")]
+	for column in measures[:3]:
+		try:
+			value = get_kpi_value(
+				dataset_doc,
+				{"value_field": column["column_name"], "calculation_type": "Total"},
+			)
+			kpis.append({"label": _("Total {0}").format(column.get("column_label") or column["column_name"]), "value": value})
+		except Exception:
+			continue
+	return kpis
+
+
+def _auto_charts(dataset_doc, columns: list) -> list:
+	"""Renvoie un graphique automatique mesure x dimension si possible."""
+	from bi_studio.services.query import get_chart_data
+
+	measures = [c for c in columns if c.get("semantic_role") == "Measure" or c.get("is_numeric")]
+	dimensions = [
+		c for c in columns
+		if c.get("semantic_role") in {"Dimension", "Date Dimension"} or c.get("is_category") or c.get("is_date")
+	]
+	if not measures or not dimensions:
+		return []
+	charts = []
+	pairs = list(zip(measures[:2], dimensions[:2]))
+	for measure, dimension in pairs:
+		try:
+			data = get_chart_data(
+				dataset_doc,
+				{
+					"chart_type": "Bar",
+					"value_field": measure["column_name"],
+					"category_field": dimension["column_name"],
+					"calculation_type": "Total",
+				},
+			)
+			charts.append(
+				{
+					"name": f"auto_{measure['column_name']}_{dimension['column_name']}",
+					"title": _("{0} par {1}").format(
+						measure.get("column_label") or measure["column_name"],
+						dimension.get("column_label") or dimension["column_name"],
+					),
+					"chart_type": "Bar",
+					"data": data,
+				}
+			)
+		except Exception:
+			continue
+	return charts
 
 
 @frappe.whitelist()
-def get_dataset(dataset: str, filters_json: str | None = None, start: int = 0, page_length: int = 50):
-	doc = assert_dataset_read(dataset)
-	rows = frappe.parse_json(doc.data_json or "[]") or []
-	rows = apply_filters(rows, frappe.parse_json(filters_json or "{}") or {})
-	start = int(start or 0)
-	page_length = int(page_length or 50)
+def get_dataset_detail(
+	dataset_name: str,
+	start: int = 0,
+	page_length: int = 50,
+	search: str | None = None,
+	order_by: str | None = None,
+	order_dir: str = "asc",
+):
+	"""Renvoie les métadonnées du dataset, ses colonnes et une page de lignes nettoyées."""
+	dataset = ensure_dataset_access(dataset_name)
+	columns = get_dataset_columns(dataset.name)
+	clean_available = False
+	try:
+		clean = get_clean_rows(
+			dataset,
+			start=int(start or 0),
+			page_length=int(page_length or 50),
+			search=search,
+			order_by=order_by,
+			order_dir=order_dir,
+		)
+		rows = clean.get("rows") or []
+		total = clean.get("total") or 0
+		clean_available = True
+	except Exception as error:
+		rows = []
+		total = 0
+		frappe.log_error(f"get_clean_rows({dataset.name}) failed: {error}", "BI Studio")
+
+	cleaned_data = {"columns": columns, "rows": rows, "total": total}
+	kpis = _auto_kpis(dataset, columns) if clean_available else []
+	charts = _auto_charts(dataset, columns) if clean_available else []
+
 	return {
-		"dataset": doc.as_dict(),
-		"schema": frappe.parse_json(doc.schema_json or "[]") or [],
-		"rows": rows[start : start + page_length],
-		"total": len(rows),
+		"dataset": {
+			"name": dataset.name,
+			"dataset_name": dataset.dataset_name,
+			"description": dataset.description,
+			"tags": dataset.tags,
+			"status": dataset.status,
+			"row_count": dataset.row_count,
+			"column_count": dataset.column_count,
+			"quality_score": dataset.quality_score,
+			"imported_at": dataset.imported_at,
+			"last_transformed_on": dataset.last_transformed_on,
+			"suggested_dashboard": dataset.suggested_dashboard,
+			"source_file": dataset.source_file,
+			"source_import": dataset.source_import,
+			"import_job": dataset.import_job,
+			"raw_table": dataset.raw_table,
+			"clean_table": dataset.clean_table,
+			"fact_table": dataset.fact_table,
+			"warehouse_model": from_json(dataset.warehouse_model_json, {}),
+			"owner": dataset.owner,
+			"modified": dataset.modified,
+		},
+		"columns": columns,
+		"rows": rows,
+		"total": total,
+		"cleaned_data": cleaned_data,
+		"kpis": kpis,
+		"charts": charts,
+		"suggested_dashboard": dataset.suggested_dashboard,
+		"is_favorite": _is_favorite("BI Dataset", dataset.name),
 	}
 
 
 @frappe.whitelist()
-def update_dataset(dataset: str, dataset_name: str | None = None, rows_json: str | None = None):
-	doc = assert_dataset_write(dataset)
-	if dataset_name is not None:
-		doc.dataset_name = dataset_name.strip()
-	if rows_json is not None:
-		rows = frappe.parse_json(rows_json) or []
-		if not isinstance(rows, list):
-			frappe.throw(_("Le contenu du dataset doit etre une liste JSON."))
-		doc.data_json = to_json(rows)
-		doc.row_count = len(rows)
-		doc.preview_json = to_json({"columns": frappe.parse_json(doc.schema_json or "[]") or [], "rows": rows[:50]})
-	doc.save(ignore_permissions=True)
-	return {"dataset": doc.name, "dataset_name": doc.dataset_name}
+def get_dataset(dataset: str, **kwargs):
+	"""Alias rétrocompatibilité."""
+	return get_dataset_detail(dataset, **kwargs)
 
 
 @frappe.whitelist()
-def delete_dataset(dataset: str):
-	doc = assert_dataset_write(dataset)
-	frappe.delete_doc("Wizio Dataset", doc.name, ignore_permissions=True)
-	return {"deleted": True}
+def rename_dataset(dataset_name: str, new_name: str):
+	dataset = ensure_dataset_access(dataset_name, ptype="write")
+	clean = (new_name or "").strip()
+	if not clean:
+		frappe.throw(_("Nouveau nom requis."))
+	dataset.dataset_name = clean
+	dataset.save(ignore_permissions=is_admin())
+	return {"dataset": dataset.name, "dataset_name": dataset.dataset_name}
+
+
+@frappe.whitelist()
+def delete_dataset(dataset_name: str):
+	ensure_dataset_access(dataset_name, ptype="delete")
+	delete_dataset_cascade(dataset_name)
+	return {"deleted": True, "dataset_name": dataset_name}
+
+
+@frappe.whitelist()
+def export_clean_dataset(dataset_name: str):
+	ensure_dataset_access(dataset_name)
+	return export_clean_dataset_file(dataset_name)
